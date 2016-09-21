@@ -37,6 +37,7 @@ func main() {
 	defer outFile.Close()
 
 	outFile.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
+	outFile.WriteString(`<GrandPerspectiveScanDump appVersion="1.8.1" formatVersion="5">` + "\n")
 	outFile.WriteString(`<ScanInfo volumePath="`+dir+`" volumeSize="0" freeSpace="0" scanTime="1970-01-01T00:00:00Z" fileSizeMeasure="logical">` + "\n")
 
 	lastDirSet := mapset.NewSet()
@@ -66,6 +67,10 @@ func main() {
 
 			outFile.WriteString(fmt.Sprintf(
 				`<Folder name="%s" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z">` + "\n", info.Name()))
+		} else {
+			outFile.WriteString(fmt.Sprintf(
+				`<File name="%s" size="%d" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z"/>` + "\n",
+				info.Name(), info.Size()))
 		}
 		fmt.Print(path + "\n")
 		return nil
@@ -78,6 +83,7 @@ func main() {
 		outFile.WriteString("</Folder>\n")
 	}
 	outFile.WriteString("</ScanInfo>\n")
+	outFile.WriteString("</GrandPerspectiveScanDump>\n")
 }
 
 func usage(message string) {
