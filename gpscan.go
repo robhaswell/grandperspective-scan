@@ -24,7 +24,20 @@ func main() {
 		usage("Output file not provided")
 	}
 
-	dir, err := filepath.Abs(dir)
+	dirInfo, err := os.Stat(dir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			usage("Scan directory does not exist")
+		} else {
+			usage(err.Error())
+		}
+	} else {
+		if !dirInfo.IsDir() {
+			usage("Provided scan path is not a directory")
+		}
+	}
+
+	dir, err = filepath.Abs(dir)
 	if err != nil {
 		usage(err.Error())
 	}
@@ -61,7 +74,6 @@ func main() {
 					outFile.WriteString("</Folder>\n")
 				}
 
-				fmt.Printf("%s | %s | %s | %s\n", curDirSet, lastDirSet, lastDirSet.Difference(curDirSet), upLevels)
 			}
 			lastDirSet = curDirSet
 
@@ -72,7 +84,6 @@ func main() {
 				`<File name="%s" size="%d" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z"/>` + "\n",
 				info.Name(), info.Size()))
 		}
-		fmt.Print(path + "\n")
 		return nil
 	}
 
@@ -88,7 +99,7 @@ func main() {
 
 func usage(message string) {
 	cmd := os.Args[0]
-	fmt.Print("error: " + message + "\n\nusage: " + cmd + " dir outfile\n")
+	fmt.Print("Error: " + message + "\n\nUsage: " + cmd + " dir outfile\n")
 	os.Exit(1)
 }
 
