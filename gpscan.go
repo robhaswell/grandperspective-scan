@@ -1,10 +1,10 @@
 package main
 
 import (
-	"path/filepath"
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/deckarep/golang-set"
@@ -43,15 +43,21 @@ func main() {
 	}
 	dirLen := len(dir)
 
-	outFile, err := os.Create(out)
-	if err != nil {
-		usage(err.Error())
+	var outFile *os.File
+
+	if out == "-" {
+		outFile = os.Stdout
+	} else {
+		outFile, err = os.Create(out)
+		if err != nil {
+			usage(err.Error())
+		}
+		defer outFile.Close()
 	}
-	defer outFile.Close()
 
 	outFile.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
 	outFile.WriteString(`<GrandPerspectiveScanDump appVersion="1.8.1" formatVersion="5">` + "\n")
-	outFile.WriteString(`<ScanInfo volumePath="`+dir+`" volumeSize="0" freeSpace="0" scanTime="1970-01-01T00:00:00Z" fileSizeMeasure="logical">` + "\n")
+	outFile.WriteString(`<ScanInfo volumePath="` + dir + `" volumeSize="0" freeSpace="0" scanTime="1970-01-01T00:00:00Z" fileSizeMeasure="logical">` + "\n")
 
 	lastDirSet := mapset.NewSet()
 
@@ -78,10 +84,10 @@ func main() {
 			lastDirSet = curDirSet
 
 			outFile.WriteString(fmt.Sprintf(
-				`<Folder name="%s" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z">` + "\n", info.Name()))
+				`<Folder name="%s" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z">`+"\n", info.Name()))
 		} else {
 			outFile.WriteString(fmt.Sprintf(
-				`<File name="%s" size="%d" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z"/>` + "\n",
+				`<File name="%s" size="%d" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z"/>`+"\n",
 				info.Name(), info.Size()))
 		}
 		return nil
@@ -102,4 +108,3 @@ func usage(message string) {
 	fmt.Print("Error: " + message + "\n\nUsage: " + cmd + " dir outfile\n")
 	os.Exit(1)
 }
-
