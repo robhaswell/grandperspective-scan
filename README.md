@@ -3,11 +3,11 @@ A utility to create GrandPerspective scan files on other operating systems.
 
 ## What does it do?
 
-[GrandPerspective](http://grandperspectiv.sourceforge.net/) is a small utility application for Mac that graphically shows the disk usage within a file system.
+[GrandPerspective](http://grandperspectiv.sourceforge.net/) is a small utility application for OSX that graphically shows the disk usage of a file system.
 
 ![Screenshot of GrandPerspective](resources/screenshot.png?raw=true "GrandPerspective")
 
-`gpscan` is a cross-platform utility which can be run on almost any operating which will create scan data files which can be loaded by GrandPerspective to visualize disk usage on non-OSX machines.
+`gpscan` is a cross-platform utility which can be run on almost any operating which will create scan data files which can be loaded by GrandPerspective to visualize disk usage on non-OSX operating systems.
 
 ![Screenshot of GrandPerspective's File menu demonstrating the Load Scan Data option](resources/load.png?raw=true "Load Save Data")
 
@@ -15,7 +15,7 @@ The Go source code can be cross-compiled for a large selection of platforms.
 
 ## Why was it created?
 
-I wanted to use GrandPerspective (or any SequoiaView-clone) to visualize disk usage on a Linux server that I administrate.
+I wanted to use GrandPerspective (or any Sequoia View-clone) to visualize disk usage on a Linux server that I administrate.
 Unfortunately I only have access to Windows and OSX GUI environments.
 
 ## How do I use it?
