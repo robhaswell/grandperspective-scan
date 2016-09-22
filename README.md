@@ -23,3 +23,11 @@ Unfortunately I only have access to Windows and OSX GUI environments.
 `gpscan` takes two arguments: The directory to scan, and a filename to save the result to.
 It is recommended that you use a `.gpscan` file extension so that the file is automatically opened with GrandPerspective.
 You can pass `-` as an output file in order to output to standard output.
+
+```bash
+$ gpscan path/to/dir scan.gpscan
+```
+
+# How do I install it?
+
+Download a relevant release, unzip and copy to a location in your `$PATH`, e.g. `/usr/local/bin/gpscan`.
