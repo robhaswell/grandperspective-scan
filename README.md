@@ -28,6 +28,10 @@ You can pass `-` as an output file in order to output to standard output.
 $ gpscan path/to/dir scan.gpscan
 ```
 
-# How do I install it?
+## How do I install it?
 
 Download a relevant release, unzip and copy to a location in your `$PATH`, e.g. `/usr/local/bin/gpscan`.
+
+# Project status
+
+This project is developed only to the point where I could complete my original task, however I will gladly review pull-requests and take bug reports in the Issues section.
