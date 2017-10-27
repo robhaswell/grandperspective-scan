@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"flag"
 	"fmt"
 	"os"
@@ -55,9 +56,28 @@ func main() {
 		defer outFile.Close()
 	}
 
-	outFile.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
-	outFile.WriteString(`<GrandPerspectiveScanDump appVersion="1.8.1" formatVersion="5">` + "\n")
-	outFile.WriteString(`<ScanInfo volumePath="` + dir + `" volumeSize="0" freeSpace="0" scanTime="1970-01-01T00:00:00Z" fileSizeMeasure="logical">` + "\n")
+	encoder := xml.NewEncoder(outFile)
+	encoder.Indent("", "  ")
+
+	outFile.WriteString(xml.Header)
+	encoder.EncodeToken(xml.StartElement{
+		Name: xml.Name{Local: "GrandPerspectiveScanDump"},
+		Attr: []xml.Attr{
+			{Name: xml.Name{Local: "appVersion"}, Value: "1.8.1"},
+			{Name: xml.Name{Local: "formatVersion"}, Value: "5"},
+		},
+	})
+	encoder.EncodeToken(xml.StartElement{
+		Name: xml.Name{Local: "ScanInfo"},
+		Attr: []xml.Attr{
+			{Name: xml.Name{Local: "volumePath"}, Value: dir},
+			{Name: xml.Name{Local: "volumeSize"}, Value: "0"},
+			{Name: xml.Name{Local: "freeSpace"}, Value: "0"},
+			{Name: xml.Name{Local: "scanTime"}, Value: "1970-01-01T00:00:00Z"},
+			{Name: xml.Name{Local: "fileSizeMeasure"}, Value: "logical"},
+		},
+	})
+	encoder.Flush()
 
 	lastDirSet := mapset.NewSet()
 
@@ -77,18 +97,33 @@ func main() {
 			if !isSubDir {
 				upLevels := lastDirSet.Difference(curDirSet).Cardinality()
 				for i := 0; i < upLevels; i++ {
-					outFile.WriteString("</Folder>\n")
+					encoder.EncodeToken(xml.EndElement{Name: xml.Name{Local: "Folder"}})
 				}
 
 			}
 			lastDirSet = curDirSet
 
-			outFile.WriteString(fmt.Sprintf(
-				`<Folder name="%s" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z">`+"\n", info.Name()))
+			encoder.EncodeToken(xml.StartElement{
+				Name: xml.Name{Local: "Folder"},
+				Attr: []xml.Attr{
+					{Name: xml.Name{Local: "name"}, Value: info.Name()},
+					{Name: xml.Name{Local: "created"}, Value: "1970-01-01T00:00:00Z"},
+					{Name: xml.Name{Local: "modified"}, Value: "1970-01-01T00:00:00Z"},
+					{Name: xml.Name{Local: "accessed"}, Value: "1970-01-01T00:00:00Z"},
+				},
+			})
 		} else {
-			outFile.WriteString(fmt.Sprintf(
-				`<File name="%s" size="%d" created="1970-01-01T00:00:00Z" modified="1970-01-01T00:00:00Z" accessed="1970-01-01T00:00:00Z"/>`+"\n",
-				info.Name(), info.Size()))
+			encoder.EncodeToken(xml.StartElement{
+				Name: xml.Name{Local: "File"},
+				Attr: []xml.Attr{
+					{Name: xml.Name{Local: "name"}, Value: info.Name()},
+					{Name: xml.Name{Local: "size"}, Value: fmt.Sprintf("%d",info.Size())},
+					{Name: xml.Name{Local: "created"}, Value: "1970-01-01T00:00:00Z"},
+					{Name: xml.Name{Local: "modified"}, Value: "1970-01-01T00:00:00Z"},
+					{Name: xml.Name{Local: "accessed"}, Value: "1970-01-01T00:00:00Z"},
+				},
+			})
+			encoder.EncodeToken(xml.EndElement{Name: xml.Name{Local: "File"}})
 		}
 		return nil
 	}
@@ -97,10 +132,11 @@ func main() {
 
 	upLevels := lastDirSet.Cardinality()
 	for i := 0; i < upLevels; i++ {
-		outFile.WriteString("</Folder>\n")
+		encoder.EncodeToken(xml.EndElement{Name: xml.Name{Local: "Folder"}})
 	}
-	outFile.WriteString("</ScanInfo>\n")
-	outFile.WriteString("</GrandPerspectiveScanDump>\n")
+	encoder.EncodeToken(xml.EndElement{Name: xml.Name{Local: "ScanInfo"}})
+	encoder.EncodeToken(xml.EndElement{Name: xml.Name{Local: "GrandPerspectiveScanDump"}})
+	encoder.Flush()
 }
 
 func usage(message string) {
