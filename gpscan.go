@@ -82,6 +82,11 @@ func main() {
 	lastDirSet := mapset.NewSet()
 
 	walkFunc := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return nil
+		}
+
 		path = path[dirLen:]
 		if info.IsDir() {
 			curDirSet := mapset.NewSet()
