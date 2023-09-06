@@ -7,9 +7,12 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/deckarep/golang-set"
 )
+
+const ISO_DATE = "2006-01-02T15:04:05Z"
 
 func main() {
 	flag.Parse()
@@ -73,7 +76,7 @@ func main() {
 			{Name: xml.Name{Local: "volumePath"}, Value: dir},
 			{Name: xml.Name{Local: "volumeSize"}, Value: "0"},
 			{Name: xml.Name{Local: "freeSpace"}, Value: "0"},
-			{Name: xml.Name{Local: "scanTime"}, Value: "1970-01-01T00:00:00Z"},
+			{Name: xml.Name{Local: "scanTime"}, Value: time.Now().Format(ISO_DATE)},
 			{Name: xml.Name{Local: "fileSizeMeasure"}, Value: "logical"},
 		},
 	})
@@ -113,7 +116,7 @@ func main() {
 				Attr: []xml.Attr{
 					{Name: xml.Name{Local: "name"}, Value: info.Name()},
 					{Name: xml.Name{Local: "created"}, Value: "1970-01-01T00:00:00Z"},
-					{Name: xml.Name{Local: "modified"}, Value: "1970-01-01T00:00:00Z"},
+					{Name: xml.Name{Local: "modified"}, Value: info.ModTime().Format(ISO_DATE)},
 					{Name: xml.Name{Local: "accessed"}, Value: "1970-01-01T00:00:00Z"},
 				},
 			})
@@ -122,9 +125,9 @@ func main() {
 				Name: xml.Name{Local: "File"},
 				Attr: []xml.Attr{
 					{Name: xml.Name{Local: "name"}, Value: info.Name()},
-					{Name: xml.Name{Local: "size"}, Value: fmt.Sprintf("%d",info.Size())},
+					{Name: xml.Name{Local: "size"}, Value: fmt.Sprintf("%d", info.Size())},
 					{Name: xml.Name{Local: "created"}, Value: "1970-01-01T00:00:00Z"},
-					{Name: xml.Name{Local: "modified"}, Value: "1970-01-01T00:00:00Z"},
+					{Name: xml.Name{Local: "modified"}, Value: info.ModTime().Format(ISO_DATE)},
 					{Name: xml.Name{Local: "accessed"}, Value: "1970-01-01T00:00:00Z"},
 				},
 			})
